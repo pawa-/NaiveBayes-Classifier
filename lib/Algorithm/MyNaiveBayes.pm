@@ -1,32 +1,29 @@
 package Algorithm::MyNaiveBayes;
-use strict;
-use warnings;
-our $VERSION = '0.01';
+use Any::Moose;
+use Storable;
+use YAML         qw/Dump/;
+use Data::Dumper qw/Dumper/;
+
+has foo => ( is => 'ro' );
+
+sub BUILD
+{
+    my $self = shift;
+    $self->_load_model;
+}
+
+sub _load_model
+{
+    my $self = shift;
+    print "test\n";
+    #print $self->foo;
+}
+
+sub add_instance
+{
+    my ($self, %params) = @_;
+    print Dumper %params;
+    print Dumper $params{label};
+}
 
 1;
-__END__
-
-=head1 NAME
-
-Algorithm::MyNaiveBayes -
-
-=head1 SYNOPSIS
-
-  use Algorithm::MyNaiveBayes;
-
-=head1 DESCRIPTION
-
-Algorithm::MyNaiveBayes is
-
-=head1 AUTHOR
-
-pawa- E<lt>pawa@dojikko.comE<gt>
-
-=head1 SEE ALSO
-
-=head1 LICENSE
-
-This library is free software; you can redistribute it and/or modify
-it under the same terms as Perl itself.
-
-=cut

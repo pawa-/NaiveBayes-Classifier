@@ -242,7 +242,7 @@ Algorithm::MyNaiveBayes - Oreore NaiveBayes Classifier
   use Algorithm::MyNaiveBayes;
   my $nb = Algorithm::MyNaiveBayes->new;
 
-  #$nb->init; # 以前のデータがあれば削除します
+  #$nb->init; # delete previous data
 
   $nb->add_instance(
       label      => 'plus',
@@ -254,7 +254,7 @@ Algorithm::MyNaiveBayes - Oreore NaiveBayes Classifier
       attributes => { bad => 1, boring => 3 },
   );
 
-  ... 適当にリピートしてね
+  ...
 
   $nb->train;
 
@@ -265,13 +265,14 @@ Algorithm::MyNaiveBayes - Oreore NaiveBayes Classifier
 
 =head1 DESCRIPTION
 
-Algorithm::MyNaiveBayes は今のところ多項モデルのナイーブベイズ分類器です。
-最大事後確率推定を用いてスムージングします。
-多分CPANにある Algorithm::NaiveBayes のほうがいいです。
+Algorithm::MyNaiveBayes is Oreore NaiveBayes Classifier.
+This uses multinominal model.
+In smoothing, maximum a posteriori estimation is used.
+I think Algorithm::NaiveBayes on CPAN is better than this module.
 
 =head1 AUTHOR
 
-pawa- E<lt>pawaアッー！とdojikko.comE<gt>
+pawa- E<lt>pawa[at]dojikko.comE<gt>
 
 =head1 SEE ALSO
 

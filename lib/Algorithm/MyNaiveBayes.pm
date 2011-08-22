@@ -13,6 +13,11 @@ has _vocabulary     => ( is => 'rw', isa => 'ArrayRef' );
 has _classifier     => ( is => 'rw', isa => 'ArrayRef' );
 
 
+# clean up
+no Any::Moose;
+__PACKAGE__->meta->make_immutable;
+
+
 sub BUILD
 {
     my $self = shift;

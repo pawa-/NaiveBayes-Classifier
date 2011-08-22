@@ -4,6 +4,7 @@ use Class::Inspector;
 use Storable       qw/nstore retrieve/;
 use List::AllUtils qw/uniq/;
 use Carp;
+our $VERSION = '0.01';
 
 
 has instances_path  => ( is => 'ro', isa => 'Str', builder => '_default_instances_path'  );
@@ -228,3 +229,57 @@ sub init
 }
 
 1;
+
+
+__END__
+
+=head1 NAME
+
+Algorithm::MyNaiveBayes - Oreore NaiveBayes Classifier
+
+=head1 SYNOPSIS
+
+  use Algorithm::MyNaiveBayes;
+  my $nb = Algorithm::MyNaiveBayes->new;
+
+  #$nb->init; # 以前のデータがあれば削除します
+
+  $nb->add_instance(
+      label      => 'plus',
+      attributes => { good => 3, bad => 1 },
+  );
+
+  $nb->add_instance(
+      label      => 'minus',
+      attributes => { bad => 1, boring => 3 },
+  );
+
+  ... 適当にリピートしてね
+
+  $nb->train;
+
+  my $result = $nb->classify(
+      attributes => { good => 2, bad => 1, boring => 1 }
+  );
+
+
+=head1 DESCRIPTION
+
+Algorithm::MyNaiveBayes は今のところ多項モデルのナイーブベイズ分類器です。
+最大事後確率推定を用いてスムージングします。
+多分CPANにある Algorithm::NaiveBayes のほうがいいです。
+
+=head1 AUTHOR
+
+pawa- E<lt>pawaアッー！とdojikko.comE<gt>
+
+=head1 SEE ALSO
+
+Algorithm::NaiveBayes
+
+=head1 LICENSE
+
+This library is free software; you can redistribute it and/or modify
+it under the same terms as Perl itself.
+
+=cut

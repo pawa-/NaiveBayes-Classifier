@@ -1,13 +1,15 @@
 package Algorithm::MyNaiveBayes;
 use Any::Moose;
 use Class::Inspector;
-use Storable qw/nstore retrieve/;
+use Storable       qw/nstore retrieve/;
+use List::AllUtils qw/uniq/;
 use Carp;
 
 
 has instances_path  => ( is => 'ro', isa => 'Str', builder => '_default_instances_path'  );
 has classifier_path => ( is => 'ro', isa => 'Str', builder => '_default_classifier_path' );
 has _instances      => ( is => 'rw', isa => 'ArrayRef' );
+has _vocabulary     => ( is => 'rw', isa => 'ArrayRef' );
 has _classifier     => ( is => 'rw', isa => 'ArrayRef' );
 
 
@@ -44,7 +46,11 @@ sub _load_instances
     my $self = shift;
 
     if (-s $self->instances_path)
-    { $self->_instances(retrieve $self->instances_path); }
+    {
+        my $instances_and_vocabulary = retrieve $self->instances_path;
+        $self->_instances($instances_and_vocabulary->{instances});
+        $self->_vocabulary($instances_and_vocabulary->{vocabulary});
+    }
 }
 
 sub _load_classifier
@@ -61,6 +67,7 @@ sub add_instance
 
     my $label          = $param{label};
     my $attributes_ref = $param{attributes};
+    my @vocabulary;
 
     croak 'label is not set'          if (!length $label);
     croak 'attributes is not HashRef' if (ref $attributes_ref ne 'HASH');
@@ -68,19 +75,30 @@ sub add_instance
 
     $param{freq} = 1; # if a new category is made, its freq is one
 
+    # add vocabulary
+    for my $word (keys %{$attributes_ref}) { push(@vocabulary, $word); }
+
+    if ($self->_vocabulary) { push(@{$self->_vocabulary}, @vocabulary); }
+    else                    { $self->_vocabulary(\@vocabulary); }
+
+    @{$self->_vocabulary} = uniq @{$self->_vocabulary};
+
+
     if ($self->_instances)
     {
         my $category_exists;
 
+        # add instance
         for my $category (@{$self->_instances})
         {
             if ($category->{label} eq $label)
             {
                 $category->{freq}++;
 
-                for my $word ( keys %{$attributes_ref} )
+                for my $word ( @{$self->_vocabulary} )
                 {
-                     $category->{attributes}->{$word} += $attributes_ref->{$word};
+                    if (!length $attributes_ref->{$word}) { $attributes_ref->{$word} = 0; }
+                    $category->{attributes}->{$word} += $attributes_ref->{$word};
                 }
 
                 $category_exists = 1;
@@ -91,9 +109,15 @@ sub add_instance
 
         if (!$category_exists) { push(@{$self->_instances}, \%param); }
     }
-    else { $self->_instances([\%param]); } # set a first instance
+    else { $self->_instances([\%param]); } # set first instance
 
-    nstore($self->_instances, $self->instances_path);
+    nstore(
+        {
+            instances  => $self->_instances,
+            vocabulary => $self->_vocabulary,
+        },
+        $self->instances_path
+    );
 }
 
 sub train
@@ -105,6 +129,8 @@ sub train
 
     if ($self->_instances)
     {
+        if (!$self->_vocabulary) { croak 'unexpected error: vocabulary returns false'; }
+
         # count num of train data and num of word
         for my $category (@{$self->_instances})
         {
@@ -121,12 +147,15 @@ sub train
         for my $category (@{$self->_instances})
         {
             my $class = $category->{label};
-            $class_probability{$class} = $category->{freq} / $num_of_train_data;
 
-            for my $word (keys %{$category->{attributes}})
+            $class_probability{$class}
+                = ($category->{freq} + 1) / ($num_of_train_data + scalar @{$self->_instances});
+
+            for my $word (@{$self->_vocabulary})
             {
                 $word_probability{"${word}|$class"}
-                    = $category->{attributes}->{$word} / $num_of_word_in_each_class{$class};
+                    = ($category->{attributes}->{$word} + 1)
+                    / ($num_of_word_in_each_class{$class} + scalar @{$self->_vocabulary});
             }
         }
     }
@@ -152,25 +181,45 @@ sub classify
         else                           { croak 'train is needed!'; }
     }
 
-     #print Dumper $self->_classifier; # debug
+    #print Dumper $self->_classifier; # debug
 
     my %result;
-    my ($class_possibility, $word_possibility) = @{$self->_classifier};
+    my ($class_probability, $word_probability) = @{$self->_classifier};
 
-    for my $category (keys %{$class_possibility})
+    for my $category (keys %{$class_probability})
     {
-        my $probability = $class_possibility->{$category};
+        my $probability = $class_probability->{$category};
 
         for my $word (keys %{$attributes_ref})
         {
+            if ($attributes_ref->{$word} < 1)
+            { croak 'attribute value must be bigger or eaqual to 1'; }
+
+            if (!length $word_probability->{"${word}|$category"})
+            { $word_probability->{"${word}|$category"} = 1; }
+
             $probability *=
-                $word_possibility->{"${word}|$category"} ** $attributes_ref->{$word};
+                $word_probability->{"${word}|$category"} ** $attributes_ref->{$word};
         }
 
         $result{$category} = $probability;
     }
 
     return \%result;
+}
+
+sub init
+{
+    my $self = shift;
+
+    if (-e $self->instances_path)
+    { unlink $self->instances_path  or croak "failed to init"; }
+
+    if (-e $self->classifier_path)
+    { unlink $self->classifier_path or croak "failed to init"; }
+
+    undef @{$self->_instances}  if $self->_instances;
+    undef @{$self->_classifier} if $self->_classifier;
 }
 
 1;

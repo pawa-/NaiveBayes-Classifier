@@ -1,27 +1,42 @@
-This is Perl module Algorithm::MyNaiveBayes.
+NAME
+    Algorithm::MyNaiveBayes - Oreore NaiveBayes Classifier
 
-INSTALLATION
+SYNOPSIS
+      use Algorithm::MyNaiveBayes;
+      my $nb = Algorithm::MyNaiveBayes->new;
 
-Algorithm::MyNaiveBayes installation is straightforward. If your CPAN shell is set up,
-you should just be able to do
+      #$nb->init; # delete previous data
 
-    % cpan Algorithm::MyNaiveBayes
+      $nb->add_instance(
+          label      => 'plus',
+          attributes => { good => 3, bad => 1 },
+      );
 
-Download it, unpack it, then build it as per the usual:
+      $nb->add_instance(
+          label      => 'minus',
+          attributes => { bad => 1, boring => 3 },
+      );
 
-    % perl Makefile.PL
-    % make && make test
+      # ...
 
-Then install it:
+      $nb->train;
 
-    % make install
+      my $result = $nb->classify(
+          attributes => { good => 2, bad => 1, boring => 1 }
+      );
 
-DOCUMENTATION
+DESCRIPTION
+    Algorithm::MyNaiveBayes is Oreore NaiveBayes Classifier. This uses
+    multinominal model. In smoothing, maximum a posteriori estimation is
+    used. I think Algorithm::NaiveBayes on CPAN is better than this module.
 
-Algorithm::MyNaiveBayes documentation is available as in POD. So you can do:
+AUTHOR
+    pawa- <pawa[at]dojikko.com>
 
-    % perldoc Algorithm::MyNaiveBayes
+SEE ALSO
+    Algorithm::NaiveBayes
 
-to read the documentation online with your favorite pager.
+LICENSE
+    This library is free software; you can redistribute it and/or modify it
+    under the same terms as Perl itself.
 
-pawa-

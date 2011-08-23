@@ -1,10 +1,13 @@
 package Algorithm::MyNaiveBayes;
+use 5.008_001;
 use Any::Moose;
+
+our $VERSION = '0.01';
+
 use Class::Inspector;
 use Storable       qw/nstore retrieve/;
 use List::AllUtils qw/uniq/;
 use Carp;
-our $VERSION = '0.01';
 
 
 has instances_path  => ( is => 'ro', isa => 'Str', builder => '_default_instances_path'  );
@@ -254,7 +257,7 @@ Algorithm::MyNaiveBayes - Oreore NaiveBayes Classifier
       attributes => { bad => 1, boring => 3 },
   );
 
-  ...
+  # ...
 
   $nb->train;
 

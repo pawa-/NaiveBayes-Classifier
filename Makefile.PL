@@ -14,6 +14,11 @@ author_tests 'xt';
 
 test_requires 'Test::More' => 0.88; # done_testing
 test_requires 'Test::File';
+
 auto_set_repository;
 auto_include;
+
+readme_from 'lib/Algorithm/MyNaiveBayes.pm';
+resources repository => 'https://github.com/pawa-/NaiveBayes-Classifier';
+
 WriteAll;

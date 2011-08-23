@@ -8,3 +8,8 @@ __DATA__
 pawa-
 pawa@dojikko.com
 Algorithm::MyNaiveBayes
+NaiveBayes
+CPAN
+Oreore
+multinominal
+posteriori

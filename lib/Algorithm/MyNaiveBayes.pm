@@ -33,7 +33,8 @@ sub BUILD
 sub _module_directory_path
 {
     my $path = Class::Inspector->loaded_filename(__PACKAGE__);
-    $path =~ s|\.pm|/|;
+    my $name = ( split(/::/, __PACKAGE__) )[-1];
+    $path =~ s|$name.pm||;
     return $path;
 }
 

@@ -6,10 +6,6 @@ use Test::File;
 
 my $nb = Algorithm::MyNaiveBayes->new;
 
-file_exists_ok($nb->_default_instances_path)  or diag('instances file not exists');
-file_exists_ok($nb->_default_classifier_path) or diag('classifier file not exists');
-
-
 $nb->init;
 
 file_not_exists_ok($nb->_default_instances_path)  or diag('faild to init');

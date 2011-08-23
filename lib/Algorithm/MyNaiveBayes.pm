@@ -7,6 +7,7 @@ our $VERSION = '0.01';
 use Class::Inspector;
 use Storable       qw/nstore retrieve/;
 use List::AllUtils qw/uniq/;
+use bignum;
 use Carp;
 
 

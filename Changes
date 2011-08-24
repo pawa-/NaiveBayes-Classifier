@@ -1,5 +1,8 @@
 Revision history for Perl extension Algorithm::MyNaiveBayes
 
+0.03    Wed Aug 24 22:59:53 2011 +0900
+        - changed path of classifier file and instances file
+
 0.02    Wed Aug 24 10:06:59 2011 +0900
         - modified regexp in _module_directory_path subroutine
 

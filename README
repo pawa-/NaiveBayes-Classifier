@@ -3,7 +3,10 @@ NAME
 
 SYNOPSIS
       use Algorithm::MyNaiveBayes;
-      my $nb = Algorithm::MyNaiveBayes->new;
+      my $nb = Algorithm::MyNaiveBayes->new(
+          instances_path  => '/tmp/mnb_instances'.
+          classifier_path => '/tmp/mnb_classifier',
+      );
 
       #$nb->init; # delete previous data
 

@@ -2,7 +2,7 @@ package Algorithm::MyNaiveBayes;
 use 5.008_001;
 use Any::Moose;
 
-our $VERSION = '0.01';
+our $VERSION = '0.02';
 
 use Class::Inspector;
 use Storable       qw/nstore retrieve/;

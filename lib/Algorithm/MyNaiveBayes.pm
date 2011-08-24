@@ -2,17 +2,16 @@ package Algorithm::MyNaiveBayes;
 use 5.008_001;
 use Any::Moose;
 
-our $VERSION = '0.02';
+our $VERSION = '0.03';
 
-use Class::Inspector;
 use Storable       qw/nstore retrieve/;
 use List::AllUtils qw/uniq/;
 use bignum;
 use Carp;
 
 
-has instances_path  => ( is => 'ro', isa => 'Str', builder => '_default_instances_path'  );
-has classifier_path => ( is => 'ro', isa => 'Str', builder => '_default_classifier_path' );
+has instances_path  => ( is => 'ro', isa => 'Str', default => 'mnb_instances'  );
+has classifier_path => ( is => 'ro', isa => 'Str', default => 'mnb_classifier' );
 has _instances      => ( is => 'rw', isa => 'ArrayRef' );
 has _vocabulary     => ( is => 'rw', isa => 'ArrayRef' );
 has _classifier     => ( is => 'rw', isa => 'ArrayRef' );
@@ -28,28 +27,6 @@ sub BUILD
     my $self = shift;
     $self->_load_instances;
     $self->_load_classifier;
-}
-
-sub _module_directory_path
-{
-    my $path = Class::Inspector->loaded_filename(__PACKAGE__);
-    my $name = ( split(/::/, __PACKAGE__) )[-1];
-    $path =~ s|$name\.pm||;
-    return $path;
-}
-
-sub _default_instances_path
-{
-    my $self = shift;
-    my $path = $self->_module_directory_path . 'instances';
-    return $path;
-}
-
-sub _default_classifier_path
-{
-    my $self = shift;
-    my $path = $self->_module_directory_path . 'classifier';
-    return $path;
 }
 
 sub _load_instances
@@ -128,7 +105,7 @@ sub add_instance
             vocabulary => $self->_vocabulary,
         },
         $self->instances_path
-    );
+    ) or croak "can't save instances: $!";
 }
 
 sub train
@@ -174,7 +151,8 @@ sub train
 
     $self->_classifier( [\%class_probability, \%word_probability] );
 
-    nstore($self->_classifier, $self->classifier_path);
+    nstore($self->_classifier, $self->classifier_path)
+        or croak "can't save classifier: $!";
 }
 
 sub classify
@@ -245,7 +223,10 @@ Algorithm::MyNaiveBayes - Oreore NaiveBayes Classifier
 =head1 SYNOPSIS
 
   use Algorithm::MyNaiveBayes;
-  my $nb = Algorithm::MyNaiveBayes->new;
+  my $nb = Algorithm::MyNaiveBayes->new(
+      instances_path  => '/tmp/mnb_instances'.
+      classifier_path => '/tmp/mnb_classifier',
+  );
 
   #$nb->init; # delete previous data
 

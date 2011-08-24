@@ -15,14 +15,14 @@ $nb->add_instance( label => 'minus', attributes => { bad      => 1, boring   => 
 $nb->add_instance( label => 'minus', attributes => { bad      => 2, good     => 1                } );
 $nb->add_instance( label => 'minus', attributes => { bad      => 2, boring   => 1, exciting => 1 } );
 
-file_exists_ok($nb->_default_instances_path)    or diag('faild to make instances file');
-file_not_empty_ok($nb->_default_instances_path) or diag('faild to write instances file');
+file_exists_ok($nb->{instances_path})    or diag('faild to make instances file');
+file_not_empty_ok($nb->{instances_path}) or diag('faild to write instances file');
 
 
 $nb->train;
 
-file_exists_ok($nb->_default_classifier_path)    or diag('faild to make classifier file');
-file_not_empty_ok($nb->_default_classifier_path) or diag('faild to write classifier file');
+file_exists_ok($nb->{classifier_path})    or diag('faild to make classifier file');
+file_not_empty_ok($nb->{classifier_path}) or diag('faild to write classifier file');
 
 
 my $result = $nb->classify( attributes => { good => 2, bad => 1, great => 1 } );
@@ -48,8 +48,8 @@ ok($result->{plus} < $result->{minus}, "classification 6");
 
 $nb->init;
 
-file_not_exists_ok($nb->_default_instances_path)  or diag('faild to init');
-file_not_exists_ok($nb->_default_classifier_path) or diag('faild to init');
+file_not_exists_ok($nb->{instances_path})  or diag('faild to init');
+file_not_exists_ok($nb->{classifier_path}) or diag('faild to init');
 
 
 done_testing;

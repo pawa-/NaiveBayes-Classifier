@@ -9,11 +9,11 @@ requires 'List::AllUtils';
 requires 'bignum';
 requires 'Carp';
 
-tests 't/*.t';
-author_tests 'xt';
-
 test_requires 'Test::More' => 0.88; # done_testing
 test_requires 'Test::File';
+
+tests 't/*.t';
+author_tests 'xt';
 
 auto_set_repository;
 auto_include;
